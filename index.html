@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BhashaLearn - Sinhala and English Vocabulary</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f4f8; --text: #0f172a; --muted: #64748b; --border: #cbd5e1;
+      --glass: rgba(255, 255, 255, 0.6); --glass-strong: rgba(255, 255, 255, 0.9);
+      --indigo: #4f46e5; --violet: #9333ea; --nav-h: 4.5rem;
+      --shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    }
+    html.dark {
+      --bg: #020617; --text: #f1f5f9; --muted: #94a3b8; --border: #334155;
+      --glass: rgba(30,41,59,.65); --glass-strong: rgba(15,23,42,.9);
+      --shadow: 0 4px 30px rgba(0,0,0,.35);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, "Noto Sans Sinhala", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; transition: background .3s, color .3s;
+    }
+    .sinhala { font-family: "Noto Sans Sinhala", sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    img, svg { display: block; }
+    .hidden { display: none !important; }
+    .container { max-width: 72rem; margin: 0 auto; padding: 0 1rem; }
+    .glass {
+      background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 1rem; 
+      box-shadow: var(--shadow), inset 0 2px 3px rgba(255, 255, 255, 0.7), inset 0 -2px 5px rgba(0, 0, 0, 0.03);
+    }
+    html.dark .glass { border-color: rgba(255,255,255,.08); }
+    .glass-strong {
+      background: var(--glass-strong); backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+    .text-gradient {
+      background: linear-gradient(90deg, var(--indigo), var(--violet));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.75rem;
+      border-radius: .75rem; font-weight: 600; color: #fff;
+      background: linear-gradient(135deg, var(--indigo), var(--violet));
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.35), inset 0 -3px 4px rgba(0, 0, 0, 0.25);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-primary:hover { 
+      transform: translateY(-3px) scale(1.02); 
+      box-shadow: 0 12px 25px rgba(79, 70, 229, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.45), inset 0 -3px 4px rgba(0, 0, 0, 0.2); 
+    }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.75rem;
+      border-radius: .75rem; font-weight: 600;
+    }
+    .btn-ghost.glass:hover { background: rgba(255,255,255,.8); }
+    html.dark .btn-ghost.glass:hover { background: rgba(51,65,85,.8); }
+    .icon-btn {
+      padding: .5rem; border-radius: .5rem; color: var(--muted); transition: background .2s;
+    }
+    .icon-btn:hover { background: rgba(148,163,184,.15); }
+    .badge {
+      display: inline-flex; align-items: center; gap: .35rem; padding: .35rem .85rem;
+      border-radius: 999px; font-size: .8rem; font-weight: 600;
+      background: rgba(79,70,229,.1); color: var(--indigo); border: 1px solid rgba(79,70,229,.2);
+    }
+    html.dark .badge { color: #a5b4fc; }
+    .progress { height: .5rem; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress > span {
+      display: block; height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--indigo), var(--violet)); transition: width .4s ease;
+    }
+    .grid-3 { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+    .grid-2 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100% { opacity: .4; } 50% { opacity: .8; } }
+    .fade-up { animation: fadeUp .55s ease forwards; }
+    #loader {
+      position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1rem;
+      background: var(--bg); transition: opacity .4s;
+    }
+    #loader.out { opacity: 0; pointer-events: none; }
+    .loader-ring {
+      width: 52px; height: 52px; border: 3px solid var(--border);
+      border-top-color: var(--indigo); border-radius: 50%; animation: spin .9s linear infinite;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: var(--nav-h);
+    }
+    nav .inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+    .logo { display: flex; align-items: center; gap: .5rem; font-weight: 700; font-size: 1.1rem; }
+    .logo-mark {
+      width: 2rem; height: 2rem; border-radius: .5rem; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--indigo), var(--violet)); color: #fff; font-size: .85rem;
+    }
+    .nav-links { display: none; gap: .25rem; }
+    @media (min-width: 768px) { .nav-links { display: flex; } .menu-btn { display: none !important; } }
+    .nav-links a {
+      display: flex; align-items: center; gap: .35rem; padding: .5rem .75rem;
+      border-radius: .5rem; font-size: .875rem; font-weight: 500; color: var(--muted);
+    }
+    .nav-links a.active { background: rgba(79,70,229,.12); color: var(--indigo); }
+    html.dark .nav-links a.active { color: #a5b4fc; }
+    .nav-actions { display: flex; align-items: center; gap: .25rem; }
+    #mobile-menu { border-top: 1px solid var(--border); padding: .75rem 1rem; }
+    #mobile-menu a {
+      display: flex; align-items: center; gap: .5rem; padding: .65rem .75rem;
+      border-radius: .5rem; font-size: .9rem; color: var(--muted);
+    }
+    #mobile-menu a.active { background: rgba(79,70,229,.12); color: var(--indigo); }
+    main { padding-top: var(--nav-h); min-height: calc(100vh - var(--nav-h)); }
+    footer {
+      border-top: 1px solid var(--border); padding: 2rem 1rem; margin-top: auto;
+      text-align: center; color: var(--muted); font-size: .875rem;
+    }
+    .hero {
+      position: relative; overflow: hidden; padding: 3rem 0 4rem;
+      background-image:
+        linear-gradient(to right, rgba(99,102,241,.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99,102,241,.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .hero-blob {
+      position: absolute; border-radius: 50%; filter: blur(60px); opacity: .35; animation: pulse 6s ease infinite;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 800; line-height: 1.15; margin-bottom: 1rem; }
+    .hero p { color: var(--muted); font-size: 1.1rem; max-width: 40rem; margin: 0 auto 1.75rem; line-height: 1.6; }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; max-width: 28rem; margin: 3rem auto 0; }
+    .stats .glass { padding: 1rem; text-align: center; }
+    .stats strong { display: block; font-size: 1.5rem; color: var(--indigo); }
+    .section-title { text-align: center; margin-bottom: 2.5rem; }
+    .section-title h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: .5rem; }
+    .section-title p { color: var(--muted); }
+    .cat-card {
+      position: relative; overflow: hidden; min-height: 16rem;
+      padding: 1.5rem; transition: all .4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      border-radius: 1.25rem; border: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--glass);
+    }
+    .cat-card::before {
+      content: ""; position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top, rgba(2,6,23,0.95) 0%, rgba(2,6,23,0.4) 60%, transparent 100%);
+      transition: opacity .3s;
+    }
+    .cat-card img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+      transition: transform .7s ease;
+    }
+    .cat-card > div { position: relative; z-index: 2; color: #fff; }
+    .cat-card:hover { 
+      transform: translateY(-8px) scale(1.02); 
+      box-shadow: 0 25px 50px rgba(0,0,0,.3);
+    }
+    .cat-card:hover img { transform: scale(1.08); }
+    .cat-icon {
+      width: 3rem; height: 3rem; border-radius: .75rem; display: grid; place-items: center; margin-bottom: .75rem;
+      background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transition: transform .3s; border: 1px solid rgba(255,255,255,0.2);
+    }
+    .cat-card:hover .cat-icon { transform: scale(1.1) rotate(5deg); background: rgba(255,255,255,0.25); }
+    .flash-wrap { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+    .flash-scene { perspective: 1200px; height: 20rem; margin-bottom: 1.5rem; }
+    @media (min-width: 640px) { .flash-scene { height: 24rem; } }
+    .flash-card {
+      position: relative; width: 100%; height: 100%; transform-style: preserve-3d;
+      transition: transform .7s cubic-bezier(0.4, 0.2, 0.2, 1); cursor: pointer;
+    }
+    .flash-card:hover:not(.flipped) {
+      transform: translateY(-4px) rotateX(2deg) rotateY(-2deg);
+    }
+    .flash-card.flipped { transform: rotateY(180deg); }
+    .flash-face {
+      position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      border-radius: 1.5rem; padding: 2rem; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      background: var(--glass-strong); border: 1px solid rgba(255,255,255,0.7); 
+      box-shadow: var(--shadow), inset 0 4px 6px rgba(255,255,255,0.9), inset 0 -4px 6px rgba(0,0,0,0.05);
+      transition: box-shadow .3s;
+    }
+    .flash-card:hover:not(.flipped) .flash-face:not(.back) {
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15), inset 0 4px 6px rgba(255,255,255,0.9), inset 0 -4px 6px rgba(0,0,0,0.05);
+    }
+    .flash-face.back { transform: rotateY(180deg); }
+    .flash-face h2 { font-size: clamp(2.5rem, 8vw, 3.5rem); font-weight: 700; margin: .5rem 0; }
+    .flash-face .en { font-size: 2rem; font-weight: 700; color: var(--indigo); }
+    .flash-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; }
+    .flash-controls .flip-btn { padding: .75rem 1.5rem; }
+    .quiz-opt {
+      width: 100%; padding: 1rem; border-radius: .75rem; font-weight: 600; text-align: center;
+      border: 1px solid var(--border); transition: transform .15s, background .2s;
+    }
+    .quiz-opt:hover:not(:disabled) { transform: scale(1.02); }
+    .quiz-opt.correct { background: rgba(16,185,129,.15); border-color: #10b981; color: #059669; }
+    .quiz-opt.wrong { background: rgba(244,63,94,.15); border-color: #f43f5e; color: #e11d48; }
+    .quiz-opt.dim { opacity: .45; }
+    #search-modal {
+      position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start;
+      justify-content: center; padding: 15vh 1rem 1rem;
+    }
+    #search-modal .backdrop { position: absolute; inset: 0; background: rgba(2,6,23,.65); backdrop-filter: blur(4px); }
+    #search-modal .panel { position: relative; width: 100%; max-width: 32rem; border-radius: 1rem; overflow: hidden; }
+    #search-modal input { flex: 1; outline: none; background: transparent; }
+    .search-row {
+      width: 100%; text-align: left; padding: .85rem 1rem; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .search-row:hover { background: rgba(148,163,184,.1); }
+    .page-header { text-align: center; padding: 2rem 1rem 1rem; }
+    .page-header h1 { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; margin: .5rem 0; }
+    .page-header p { color: var(--muted); }
+    select.glass, input.glass { padding: .5rem 1rem; border-radius: .5rem; width: 100%; outline: none; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    html.dark ::-webkit-scrollbar-thumb { background: #475569; }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="loader-ring"></div>
+    <p style="color:var(--muted);font-weight:500;">Loading BhashaLearn…</p>
+  </div>
+
+  <nav class="glass-strong">
+    <div class="container inner">
+      <a href="#/" class="logo">
+        <span class="logo-mark sinhala">බ</span>
+        Basha<span style="color:var(--indigo)">Learn</span>
+      </a>
+      <div class="nav-links" id="nav-desktop"></div>
+      <div class="nav-actions">
+        <button class="icon-btn" id="btn-search" aria-label="Search" title="Search"></button>
+        <button class="icon-btn" id="btn-theme" aria-label="Toggle theme"></button>
+        <button class="icon-btn menu-btn" id="btn-menu" aria-label="Menu"></button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="glass-strong hidden"></div>
+  </nav>
+
+  <main id="app"></main>
+
+  <footer>
+    <div class="container" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;">
+      <span class="logo" style="font-size:.95rem;"><span class="logo-mark sinhala" style="width:1.5rem;height:1.5rem;font-size:.7rem;">බ</span> BhashaLearn</span>
+      <span>Made by Sameera</span>
+      <span style="font-size:.75rem;">© <span id="year"></span> BhashaLearn</span>
+    </div>
+  </footer>
+
+  <div id="search-modal" class="hidden">
+    <div class="backdrop" id="search-close"></div>
+    <div class="panel glass-strong">
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;border-bottom:1px solid var(--border);">
+        <span id="search-icon"></span>
+        <input type="text" id="search-input" placeholder="Search Sinhala or English words…" />
+        <button class="icon-btn" id="search-x">✕</button>
+      </div>
+      <div id="search-results" style="max-height:50vh;overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <script>
+/* Vocabulary & categories — loaded into single-file build */
+const CATEGORIES = [
+  { id: "daily", name: "Daily Conversation", color: "#60a5fa", icon: "message", image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=600&auto=format&fit=crop" },
+  { id: "science", name: "Science", color: "#c084fc", icon: "science", image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=600&auto=format&fit=crop" },
+  { id: "technology", name: "Technology", color: "#34d399", icon: "cpu", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop" },
+  { id: "business", name: "Business", color: "#fbbf24", icon: "briefcase", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop" },
+  { id: "school", name: "School Words", color: "#fb7185", icon: "school", image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=600&auto=format&fit=crop" },
+  { id: "advanced", name: "Advanced English", color: "#818cf8", icon: "book", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=600&auto=format&fit=crop" },
+  { id: "travel", name: "Travel & Places", color: "#38bdf8", icon: "map", image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=600&auto=format&fit=crop" },
+  { id: "food", name: "Food & Dining", color: "#f87171", icon: "coffee", image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=600&auto=format&fit=crop" },
+  { id: "health", name: "Health & Body", color: "#f472b6", icon: "activity", image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=600&auto=format&fit=crop" },
+  { id: "nature", name: "Nature & Animals", color: "#a3e635", icon: "leaf", image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?q=80&w=600&auto=format&fit=crop" },
+];
+
+const VOCABULARY = [
+  { id: 1, sinhala: "හෙලෝ", english: "Hello", transliteration: "Helō", category: "daily", example: "Hello, how are you today?" },
+  { id: 2, sinhala: "ස්තුතියි", english: "Thank you", transliteration: "Stutiyi", category: "daily", example: "Thank you for your help." },
+  { id: 3, sinhala: "කණගාටුයි", english: "Sorry", transliteration: "Kanaṇgāṭuyi", category: "daily", example: "I am sorry for being late." },
+  { id: 4, sinhala: "ආයුබෝවන්", english: "Goodbye", transliteration: "Āyubōvan", category: "daily", example: "Goodbye and have a nice day!" },
+  { id: 5, sinhala: "හෝටලය", english: "Hotel", transliteration: "Hōṭalaya", category: "daily", example: "We stayed at a luxury hotel." },
+  { id: 6, sinhala: "රෝහල", english: "Hospital", transliteration: "Rōhala", category: "daily", example: "The hospital is open 24 hours." },
+  { id: 7, sinhala: "පාර", english: "Road", transliteration: "Pāra", category: "daily", example: "The road is under construction." },
+  { id: 8, sinhala: "වාහනය", english: "Vehicle", transliteration: "Vāhanaya", category: "daily", example: "My vehicle needs servicing." },
+  { id: 9, sinhala: "කෑම", english: "Food", transliteration: "Kǣma", category: "daily", example: "Sri Lankan food is delicious." },
+  { id: 10, sinhala: "වතුර", english: "Water", transliteration: "Vatura", category: "daily", example: "Please bring me a glass of water." },
+  { id: 11, sinhala: "විද්‍යාව", english: "Science", transliteration: "Vidyāva", category: "science", example: "Science helps us understand nature." },
+  { id: 12, sinhala: "ග්‍රහලෝකය", english: "Planet", transliteration: "Grahapaya", category: "science", example: "Earth is the third planet from the sun." },
+  { id: 13, sinhala: "උෂ්ණත්වය", english: "Temperature", transliteration: "Uṣṇatvaya", category: "science", example: "The temperature is rising today." },
+  { id: 14, sinhala: "පීඩනය", english: "Pressure", transliteration: "Pīḍanaya", category: "science", example: "Blood pressure should be monitored." },
+  { id: 15, sinhala: "ජීවියා", english: "Organism", transliteration: "Jīviyā", category: "science", example: "A cell is the basic unit of any organism." },
+  { id: 16, sinhala: "ශක්තිය", english: "Energy", transliteration: "Śaktiya", category: "science", example: "Solar energy is renewable." },
+  { id: 17, sinhala: "පරමාණුව", english: "Atom", transliteration: "Paramāṇuva", category: "science", example: "An atom is made of protons and electrons." },
+  { id: 18, sinhala: "පරිසරය", english: "Environment", transliteration: "Parisaraya", category: "science", example: "We must protect our environment." },
+  { id: 19, sinhala: "ජානය", english: "Gene", transliteration: "Jānaya", category: "science", example: "Eye color is determined by genes." },
+  { id: 20, sinhala: "පරිවෘත්තිය", english: "Metabolism", transliteration: "Parivr̥ttiya", category: "science", example: "Exercise boosts your metabolism." },
+  { id: 21, sinhala: "පරිගණකය", english: "Computer", transliteration: "Parigaṇakaya", category: "technology", example: "I use a computer for my work." },
+  { id: 22, sinhala: "අන්තර්ජාලය", english: "Internet", transliteration: "Antarjālaya", category: "technology", example: "The internet connects the world." },
+  { id: 23, sinhala: "මෘදුකාංගය", english: "Software", transliteration: "Mr̥dukāṅgaya", category: "technology", example: "This software is free to use." },
+  { id: 24, sinhala: "දෘඪාංගය", english: "Hardware", transliteration: "Dr̥ḍhāṅgaya", category: "technology", example: "The hardware needs an upgrade." },
+  { id: 25, sinhala: "දත්ත", english: "Data", transliteration: "Datta", category: "technology", example: "Data security is very important." },
+  { id: 26, sinhala: "මෙහෙයුම් පද්ධතිය", english: "Operating System", transliteration: "Meheyum paddhatiya", category: "technology", example: "Windows is an operating system." },
+  { id: 27, sinhala: "ජාලය", english: "Network", transliteration: "Jālaya", category: "technology", example: "The office network is down." },
+  { id: 28, sinhala: "ගොනුව", english: "File", transliteration: "Gonuva", category: "technology", example: "Please send me the file." },
+  { id: 29, sinhala: "මුරපදය", english: "Password", transliteration: "Murapadaya", category: "technology", example: "Use a strong password." },
+  { id: 30, sinhala: "වේගය", english: "Speed", transliteration: "Vēgaya", category: "technology", example: "The internet speed is excellent." },
+  { id: 31, sinhala: "ව්‍යාපාරය", english: "Business", transliteration: "Vyāpāraya", category: "business", example: "He runs a small business." },
+  { id: 32, sinhala: "ලාභය", english: "Profit", transliteration: "Lābhaya", category: "business", example: "The company made a huge profit." },
+  { id: 33, sinhala: "ආයෝජනය", english: "Investment", transliteration: "Āyōjanaya", category: "business", example: "Real estate is a safe investment." },
+  { id: 34, sinhala: "මිලදී ගැනීම", english: "Purchase", transliteration: "Miladī gænīma", category: "business", example: "The purchase was completed online." },
+  { id: 35, sinhala: "විකිණීම", english: "Sale", transliteration: "Vikiṇīma", category: "business", example: "The sale starts tomorrow." },
+  { id: 36, sinhala: "ගිවිසුම", english: "Contract", transliteration: "Givisuma", category: "business", example: "We signed the contract yesterday." },
+  { id: 37, sinhala: "සේවාදායකයා", english: "Client", transliteration: "Sēvādāyakayā", category: "business", example: "The client is satisfied." },
+  { id: 38, sinhala: "වෙළඳපොළ", english: "Market", transliteration: "Veḷandapoḷa", category: "business", example: "The stock market is volatile." },
+  { id: 39, sinhala: "ආදායම", english: "Income", transliteration: "Ādāyama", category: "business", example: "My monthly income increased." },
+  { id: 40, sinhala: "වියදම්", english: "Expense", transliteration: "Viyadama", category: "business", example: "Reduce unnecessary expenses." },
+  { id: 41, sinhala: "පාසල", english: "School", transliteration: "Pāsala", category: "school", example: "The school has 500 students." },
+  { id: 42, sinhala: "ගුරුවරයා", english: "Teacher", transliteration: "Guruvarayā", category: "school", example: "My teacher is very kind." },
+  { id: 43, sinhala: "ශිෂ්‍යයා", english: "Student", transliteration: "Śiṣyayā", category: "school", example: "The student passed the exam." },
+  { id: 44, sinhala: "පන්තිය", english: "Class", transliteration: "Pantiya", category: "school", example: "The class begins at 8 AM." },
+  { id: 45, sinhala: "පාඩම", english: "Lesson", transliteration: "Pāḍama", category: "school", example: "Today we learned a new lesson." },
+  { id: 46, sinhala: "විභාගය", english: "Exam", transliteration: "Vibhāgaya", category: "school", example: "The final exam is next week." },
+  { id: 47, sinhala: "සහතිකය", english: "Certificate", transliteration: "Sahatikaya", category: "school", example: "She received her certificate." },
+  { id: 48, sinhala: "විද්‍යාලය", english: "College", transliteration: "Vidyālaya", category: "school", example: "He attends a prestigious college." },
+  { id: 49, sinhala: "පොත", english: "Book", transliteration: "Pota", category: "school", example: "I read an interesting book." },
+  { id: 50, sinhala: "දැනුම", english: "Knowledge", transliteration: "Dænuma", category: "school", example: "Knowledge is power." },
+  { id: 51, sinhala: "ප්‍රජාතන්ත්‍රවාදය", english: "Democracy", transliteration: "Prajātantravādaya", category: "advanced", example: "Democracy ensures freedom for all." },
+  { id: 52, sinhala: "සංස්කෘතිය", english: "Culture", transliteration: "Saṃskr̥tiya", category: "advanced", example: "Sri Lankan culture is rich." },
+  { id: 53, sinhala: "සමාජය", english: "Society", transliteration: "Samājaya", category: "advanced", example: "Education benefits society." },
+  { id: 54, sinhala: "නීතිය", english: "Law", transliteration: "Nītiya", category: "advanced", example: "Everyone must obey the law." },
+  { id: 55, sinhala: "ප්‍රතිපත්තිය", english: "Policy", transliteration: "Pratipatiya", category: "advanced", example: "The new policy affects everyone." },
+  { id: 56, sinhala: "සංවර්ධනය", english: "Development", transliteration: "Saṃvardhanaya", category: "advanced", example: "Economic development is crucial." },
+  { id: 57, sinhala: "සාමය", english: "Peace", transliteration: "Sāmaya", category: "advanced", example: "World peace is our goal." },
+  { id: 58, sinhala: "නිදහස", english: "Freedom", transliteration: "Nidahasa", category: "advanced", example: "Freedom of speech is important." },
+  { id: 59, sinhala: "ආර්ථිකය", english: "Economy", transliteration: "Ārthikaya", category: "advanced", example: "The economy is growing fast." },
+  { id: 60, sinhala: "අධිකරණය", english: "Judiciary", transliteration: "Adhikaraṇaya", category: "advanced", example: "The judiciary must remain independent." },
+  { id: 61, sinhala: "ගුවන් තොටුපළ", english: "Airport", transliteration: "Guvan toṭupaḷa", category: "travel", example: "We arrived at the airport early." },
+  { id: 62, sinhala: "ගමන් බලපත්‍රය", english: "Passport", transliteration: "Gaman balapatraya", category: "travel", example: "Please show your passport." },
+  { id: 63, sinhala: "වීසා", english: "Visa", transliteration: "Vīsā", category: "travel", example: "I need a visa to enter the country." },
+  { id: 64, sinhala: "දුම්රිය", english: "Train", transliteration: "Dumriya", category: "travel", example: "The train leaves at 5 PM." },
+  { id: 65, sinhala: "බස් රථය", english: "Bus", transliteration: "Bas rathaya", category: "travel", example: "Take the bus to the city center." },
+  { id: 66, sinhala: "ටිකට් පත", english: "Ticket", transliteration: "Ṭikaṭ pata", category: "travel", example: "I bought a round-trip ticket." },
+  { id: 67, sinhala: "ගුවන් යානය", english: "Airplane", transliteration: "Guvan yānaya", category: "travel", example: "The airplane is taking off." },
+  { id: 68, sinhala: "සිතියම", english: "Map", transliteration: "Sitiyama", category: "travel", example: "Let's check the map to find the route." },
+  { id: 69, sinhala: "ගමන් මල්ල", english: "Luggage", transliteration: "Gaman malla", category: "travel", example: "My luggage is missing." },
+  { id: 70, sinhala: "ගමනාන්තය", english: "Destination", transliteration: "Gamanāntaya", category: "travel", example: "We have reached our destination." },
+  { id: 71, sinhala: "ආපන ශාලාව", english: "Restaurant", transliteration: "Āpana śālāva", category: "food", example: "Let's eat at a nice restaurant." },
+  { id: 72, sinhala: "මෙනුව", english: "Menu", transliteration: "Menuva", category: "food", example: "Could I see the menu, please?" },
+  { id: 73, sinhala: "බිල්පත", english: "Bill", transliteration: "Bilpata", category: "food", example: "May I have the bill?" },
+  { id: 74, sinhala: "උදෑසන ආහාරය", english: "Breakfast", transliteration: "Udǣsana āhāraya", category: "food", example: "I had a heavy breakfast." },
+  { id: 75, sinhala: "දිවා ආහාරය", english: "Lunch", transliteration: "Divā āhāraya", category: "food", example: "What's for lunch today?" },
+  { id: 76, sinhala: "රාත්‍රී ආහාරය", english: "Dinner", transliteration: "Rātrī āhāraya", category: "food", example: "We are having dinner at 8 PM." },
+  { id: 77, sinhala: "පිඟාන", english: "Plate", transliteration: "Piṅgāna", category: "food", example: "Pass me a clean plate." },
+  { id: 78, sinhala: "හැන්ද", english: "Spoon", transliteration: "Hænda", category: "food", example: "I need a spoon for the soup." },
+  { id: 79, sinhala: "රසවත්", english: "Delicious", transliteration: "Rasavat", category: "food", example: "The food was very delicious." },
+  { id: 80, sinhala: "එළවළු", english: "Vegetables", transliteration: "Eḷavaḷu", category: "food", example: "Eat more fresh vegetables." },
+  { id: 81, sinhala: "වෛද්‍යවරයා", english: "Doctor", transliteration: "Vaidyavarayā", category: "health", example: "The doctor will see you now." },
+  { id: 82, sinhala: "ඖෂධය", english: "Medicine", transliteration: "Auṣadhaya", category: "health", example: "Take this medicine twice a day." },
+  { id: 83, sinhala: "රුධිරය", english: "Blood", transliteration: "Rudhiraya", category: "health", example: "Blood donation saves lives." },
+  { id: 84, sinhala: "හෘදය", english: "Heart", transliteration: "Hr̥daya", category: "health", example: "Exercise is good for your heart." },
+  { id: 85, sinhala: "හිස", english: "Head", transliteration: "Hisa", category: "health", example: "My head hurts today." },
+  { id: 86, sinhala: "වේදනාව", english: "Pain", transliteration: "Vēdanāva", category: "health", example: "I have a sharp pain in my leg." },
+  { id: 87, sinhala: "ඇස", english: "Eye", transliteration: "Æsa", category: "health", example: "She has beautiful brown eyes." },
+  { id: 88, sinhala: "දත", english: "Tooth", transliteration: "Data", category: "health", example: "I need to visit the dentist for my tooth." },
+  { id: 89, sinhala: "ශරීරය", english: "Body", transliteration: "Śarīraya", category: "health", example: "Drink water to keep your body hydrated." },
+  { id: 90, sinhala: "සෞඛ්‍යය", english: "Health", transliteration: "Saukhyaya", category: "health", example: "Good health is the greatest wealth." },
+  { id: 91, sinhala: "ගස", english: "Tree", transliteration: "Gasa", category: "nature", example: "The tree provides cooling shade." },
+  { id: 92, sinhala: "මල", english: "Flower", transliteration: "Mala", category: "nature", example: "This flower smells very sweet." },
+  { id: 93, sinhala: "සතා", english: "Animal", transliteration: "Satā", category: "nature", example: "The lion is a wild animal." },
+  { id: 94, sinhala: "ගඟ", english: "River", transliteration: "Gaṅga", category: "nature", example: "The river flows to the ocean." },
+  { id: 95, sinhala: "කන්ද", english: "Mountain", transliteration: "Kanda", category: "nature", example: "We climbed the highest mountain." },
+  { id: 96, sinhala: "වලාකුළ", english: "Cloud", transliteration: "Valākuḷa", category: "nature", example: "The dark cloud brings rain." },
+  { id: 97, sinhala: "හිරු", english: "Sun", transliteration: "Hiru", category: "nature", example: "The sun rises in the east." },
+  { id: 98, sinhala: "සඳ", english: "Moon", transliteration: "Saňda", category: "nature", example: "The full moon shines brightly." },
+  { id: 99, sinhala: "සුළඟ", english: "Wind", transliteration: "Suḷaṅga", category: "nature", example: "The cold wind blew through the trees." },
+  { id: 100, sinhala: "වනය", english: "Forest", transliteration: "Vanaya", category: "nature", example: "Many animals live in the forest." },
+  { id: 101, sinhala: "පවුල", english: "Family", transliteration: "Pavula", category: "daily", example: "I love my family." },
+  { id: 102, sinhala: "මිතුරා", english: "Friend", transliteration: "Miturā", category: "daily", example: "He is my best friend." },
+  { id: 103, sinhala: "නිවස", english: "Home", transliteration: "Nivasa", category: "daily", example: "Let's go home now." },
+  { id: 104, sinhala: "පොත", english: "Book", transliteration: "Pota", category: "daily", example: "This book is interesting." },
+  { id: 105, sinhala: "කාමරය", english: "Room", transliteration: "Kāmaraya", category: "daily", example: "Clean your room." },
+  { id: 106, sinhala: "ඔරලෝසුව", english: "Clock", transliteration: "Oralōsuva", category: "daily", example: "Look at the clock." },
+  { id: 107, sinhala: "දුරකථනය", english: "Phone", transliteration: "Durakathana", category: "daily", example: "My phone is ringing." },
+  { id: 108, sinhala: "සපත්තු", english: "Shoes", transliteration: "Sapatthu", category: "daily", example: "These are new shoes." },
+  { id: 109, sinhala: "ඇඳුම්", english: "Clothes", transliteration: "Ændum", category: "daily", example: "Wash the clothes." },
+  { id: 110, sinhala: "ගෙවත්ත", english: "Garden", transliteration: "Gevatta", category: "daily", example: "The garden is beautiful." },
+  { id: 111, sinhala: "රසායනිකය", english: "Chemical", transliteration: "Rasāyanikaya", category: "science", example: "Handle the chemical with care." },
+  { id: 112, sinhala: "අභ්‍යවකාශය", english: "Space", transliteration: "Abhyavakāśaya", category: "science", example: "Space is infinite." },
+  { id: 113, sinhala: "සෛලය", english: "Cell", transliteration: "Sailaya", category: "science", example: "The human body has trillions of cells." },
+  { id: 114, sinhala: "පර්යේෂණය", english: "Research", transliteration: "Paryēṣaṇaya", category: "science", example: "They are doing cancer research." },
+  { id: 115, sinhala: "නිරීක්ෂණය", english: "Observation", transliteration: "Nirīkṣaṇaya", category: "science", example: "Scientific observation is key." },
+  { id: 116, sinhala: "ගුරුත්වාකර්ෂණය", english: "Gravity", transliteration: "Gurutvākarṣaṇaya", category: "science", example: "Gravity keeps us on Earth." },
+  { id: 117, sinhala: "පදාර්ථය", english: "Matter", transliteration: "Padārthaya", category: "science", example: "Everything is made of matter." },
+  { id: 118, sinhala: "තරංගය", english: "Wave", transliteration: "Taraṅgaya", category: "science", example: "Light travels as a wave." },
+  { id: 119, sinhala: "පරිණාමය", english: "Evolution", transliteration: "Pariṇāmaya", category: "science", example: "The theory of evolution." },
+  { id: 120, sinhala: "මූලද්‍රව්‍යය", english: "Element", transliteration: "Mūladravyay", category: "science", example: "Oxygen is an element." },
+  { id: 121, sinhala: "තිරය", english: "Screen", transliteration: "Tiraya", category: "technology", example: "The phone screen is broken." },
+  { id: 122, sinhala: "යතුරුපුවරුව", english: "Keyboard", transliteration: "Yaturupuvaruva", category: "technology", example: "I need a new keyboard." },
+  { id: 123, sinhala: "මූසිකය", english: "Mouse", transliteration: "Mūsikaya", category: "technology", example: "Click the wireless mouse." },
+  { id: 124, sinhala: "යෙදුම", english: "App (Application)", transliteration: "Yeduma", category: "technology", example: "Download this mobile app." },
+  { id: 125, sinhala: "දත්ත සමුදාය", english: "Database", transliteration: "Datta samudāya", category: "technology", example: "The database is secure." },
+  { id: 126, sinhala: "වෙබ් අඩවිය", english: "Website", transliteration: "Veb aḍaviya", category: "technology", example: "This website is fast." },
+  { id: 127, sinhala: "ආරක්ෂාව", english: "Security", transliteration: "Ārakṣāva", category: "technology", example: "Cyber security is important." },
+  { id: 128, sinhala: "බැටරිය", english: "Battery", transliteration: "Bæṭariya", category: "technology", example: "My battery is low." },
+  { id: 129, sinhala: "සංඥාව", english: "Signal", transliteration: "Saññāva", category: "technology", example: "There is no Wi-Fi signal." },
+  { id: 130, sinhala: "දෘශ්‍ය", english: "Visual", transliteration: "Dr̥śya", category: "technology", example: "The visual quality is high." },
+  { id: 131, sinhala: "කළමනාකරු", english: "Manager", transliteration: "Kaḷamanākaru", category: "business", example: "The manager called a meeting." },
+  { id: 132, sinhala: "සේවකයා", english: "Employee", transliteration: "Sēvakayā", category: "business", example: "Every employee works hard." },
+  { id: 133, sinhala: "රැස්වීම", english: "Meeting", transliteration: "Ræsvīma", category: "business", example: "We have a meeting at 10 AM." },
+  { id: 134, sinhala: "සැලසුම", english: "Plan", transliteration: "Sælasuma", category: "business", example: "We need a business plan." },
+  { id: 135, sinhala: "අයවැය", english: "Budget", transliteration: "Ayavæya", category: "business", example: "The budget is approved." },
+  { id: 136, sinhala: "ගිණුම", english: "Account", transliteration: "Giṇuma", category: "business", example: "Check the bank account." },
+  { id: 137, sinhala: "ණය", english: "Loan", transliteration: "Ṇaya", category: "business", example: "I took a bank loan." },
+  { id: 138, sinhala: "ව්‍යාපෘතිය", english: "Project", transliteration: "Vyāpr̥tiya", category: "business", example: "The project is almost complete." },
+  { id: 139, sinhala: "සමාගම", english: "Company", transliteration: "Samāgama", category: "business", example: "This is a software company." },
+  { id: 140, sinhala: "කොටස්", english: "Shares", transliteration: "Koṭas", category: "business", example: "He bought company shares." },
+  { id: 141, sinhala: "ප්‍රශ්නය", english: "Question", transliteration: "Praśnaya", category: "school", example: "I have a question." },
+  { id: 142, sinhala: "පිළිතුර", english: "Answer", transliteration: "Piḷitura", category: "school", example: "Write the correct answer." },
+  { id: 143, sinhala: "පැන්සල", english: "Pencil", transliteration: "Pænsala", category: "school", example: "Sharpen your pencil." },
+  { id: 144, sinhala: "පෑන", english: "Pen", transliteration: "Pǣna", category: "school", example: "Can I borrow a pen?" },
+  { id: 145, sinhala: "ගණිතය", english: "Mathematics", transliteration: "Gaṇitaya", category: "school", example: "Mathematics is difficult for some." },
+  { id: 146, sinhala: "ඉතිහාසය", english: "History", transliteration: "Itihāsaya", category: "school", example: "We learned world history." },
+  { id: 147, sinhala: "භූගෝල විද්‍යාව", english: "Geography", transliteration: "Bhūgōla vidyāva", category: "school", example: "Geography teaches about the earth." },
+  { id: 148, sinhala: "කළුලෑල්ල", english: "Blackboard", transliteration: "Kaḷulǣlla", category: "school", example: "The teacher writes on the blackboard." },
+  { id: 149, sinhala: "විදුහල්පති", english: "Principal", transliteration: "Viduhalpati", category: "school", example: "The principal addressed the students." },
+  { id: 150, sinhala: "නිවාඩුව", english: "Holiday", transliteration: "Nivāḍuva", category: "school", example: "School holiday starts tomorrow." },
+  { id: 151, sinhala: "තීරණය", english: "Decision", transliteration: "Tīraṇaya", category: "advanced", example: "Make a firm decision." },
+  { id: 152, sinhala: "සාකච්ඡාව", english: "Discussion", transliteration: "Sākacchāva", category: "advanced", example: "The discussion was very long." },
+  { id: 153, sinhala: "අත්දැකීම", english: "Experience", transliteration: "Atdækīma", category: "advanced", example: "She has years of experience." },
+  { id: 154, sinhala: "බලපෑම", english: "Impact", transliteration: "Balapǣma", category: "advanced", example: "The impact was massive." },
+  { id: 155, sinhala: "වගකීම", english: "Responsibility", transliteration: "Vagakīma", category: "advanced", example: "It is your responsibility." },
+  { id: 156, sinhala: "පරමාර්ථය", english: "Objective", transliteration: "Paramārthaya", category: "advanced", example: "Our main objective is success." },
+  { id: 157, sinhala: "උපායමාර්ගය", english: "Strategy", transliteration: "Upāyamārgaya", category: "advanced", example: "We need a better strategy." },
+  { id: 158, sinhala: "විශ්ලේෂණය", english: "Analysis", transliteration: "Viślēṣaṇaya", category: "advanced", example: "The data analysis is done." },
+  { id: 159, sinhala: "ප්‍රතිඵලය", english: "Result", transliteration: "Pratiphālaya", category: "advanced", example: "The final result is positive." },
+  { id: 160, sinhala: "තරඟය", english: "Competition", transliteration: "Taraṅgaya", category: "advanced", example: "The market competition is high." },
+  { id: 161, sinhala: "හෝටලය", english: "Hotel", transliteration: "Hōṭalaya", category: "travel", example: "Book a hotel room." },
+  { id: 162, sinhala: "සංචාරකයා", english: "Tourist", transliteration: "Sañcārakayā", category: "travel", example: "The tourist took many photos." },
+  { id: 163, sinhala: "මාර්ගෝපදේශකයා", english: "Guide", transliteration: "Mārgōpadēśakayā", category: "travel", example: "The tour guide was helpful." },
+  { id: 164, sinhala: "ගමන් මල්ල", english: "Backpack", transliteration: "Gaman malla", category: "travel", example: "Carry a light backpack." },
+  { id: 165, sinhala: "නවාතැන", english: "Accommodation", transliteration: "Navātæna", category: "travel", example: "We found cheap accommodation." },
+  { id: 166, sinhala: "ප්‍රවාහනය", english: "Transportation", transliteration: "Pravāhanaya", category: "travel", example: "Public transportation is available." },
+  { id: 167, sinhala: "වෙරළ", english: "Beach", transliteration: "Veraḷa", category: "travel", example: "Let's relax on the beach." },
+  { id: 168, sinhala: "දර්ශනය", english: "View", transliteration: "Darśanaya", category: "travel", example: "The mountain view is amazing." },
+  { id: 169, sinhala: "කෞතුකාගාරය", english: "Museum", transliteration: "Kautukāgāraya", category: "travel", example: "Visit the national museum." },
+  { id: 170, sinhala: "සිහිවටනය", english: "Souvenir", transliteration: "Sihivaṭanaya", category: "travel", example: "I bought a souvenir." },
+  { id: 171, sinhala: "පලතුරු", english: "Fruits", transliteration: "Palaturu", category: "food", example: "Eat fresh fruits." },
+  { id: 172, sinhala: "මස්", english: "Meat", transliteration: "Mas", category: "food", example: "He doesn't eat meat." },
+  { id: 173, sinhala: "මාළු", english: "Fish", transliteration: "Māḷu", category: "food", example: "Fried fish is tasty." },
+  { id: 174, sinhala: "බිත්තර", english: "Egg", transliteration: "Bittara", category: "food", example: "I had a boiled egg." },
+  { id: 175, sinhala: "කිරි", english: "Milk", transliteration: "Kiri", category: "food", example: "Drink a glass of milk." },
+  { id: 176, sinhala: "සීනි", english: "Sugar", transliteration: "Sīni", category: "food", example: "Don't consume too much sugar." },
+  { id: 177, sinhala: "ලුණු", english: "Salt", transliteration: "Luṇu", category: "food", example: "Add some salt to the soup." },
+  { id: 178, sinhala: "පාන්", english: "Bread", transliteration: "Pān", category: "food", example: "Buy a loaf of bread." },
+  { id: 179, sinhala: "බත්", english: "Rice", transliteration: "Bat", category: "food", example: "Rice is the staple food." },
+  { id: 180, sinhala: "කුළුබඩු", english: "Spices", transliteration: "Kuḷubaḍu", category: "food", example: "Sri Lankan food has many spices." },
+  { id: 181, sinhala: "රෝගය", english: "Disease", transliteration: "Rōgaya", category: "health", example: "This disease is curable." },
+  { id: 182, sinhala: "ආසාදනය", english: "Infection", transliteration: "Āsādanaya", category: "health", example: "The wound got an infection." },
+  { id: 183, sinhala: "ප්‍රතිකාරය", english: "Treatment", transliteration: "Pratikāraya", category: "health", example: "The treatment will last a week." },
+  { id: 184, sinhala: "සුවවීම", english: "Recovery", transliteration: "Suvavīma", category: "health", example: "Wish you a speedy recovery." },
+  { id: 185, sinhala: "උණ", english: "Fever", transliteration: "Uṇa", category: "health", example: "I have a high fever." },
+  { id: 186, sinhala: "කැස්ස", english: "Cough", transliteration: "Kæssa", category: "health", example: "He has a bad cough." },
+  { id: 187, sinhala: "පෙත්ත", english: "Pill", transliteration: "Petta", category: "health", example: "Swallow the pill with water." },
+  { id: 188, sinhala: "ව්‍යායාමය", english: "Exercise", transliteration: "Vyāyāmaya", category: "health", example: "Daily exercise is good." },
+  { id: 189, sinhala: "බර", english: "Weight", transliteration: "Bara", category: "health", example: "Try to lose some weight." },
+  { id: 190, sinhala: "මාංශ පේශි", english: "Muscle", transliteration: "Māṃśa pēśi", category: "health", example: "My muscles ache." },
+  { id: 191, sinhala: "ගල", english: "Stone", transliteration: "Gala", category: "nature", example: "He threw a stone." },
+  { id: 192, sinhala: "පස", english: "Soil", transliteration: "Pasa", category: "nature", example: "The soil is fertile here." },
+  { id: 193, sinhala: "වර්ෂාව", english: "Rain", transliteration: "Varṣāva", category: "nature", example: "Heavy rain is expected." },
+  { id: 194, sinhala: "හිම", english: "Snow", transliteration: "Hima", category: "nature", example: "The snow is falling." },
+  { id: 195, sinhala: "කුරුල්ලා", english: "Bird", transliteration: "Kurullā", category: "nature", example: "A bird is singing outside." },
+  { id: 196, sinhala: "මල", english: "Flower", transliteration: "Mala", category: "nature", example: "Pluck a flower." },
+  { id: 197, sinhala: "මුහුද", english: "Sea", transliteration: "Muhuda", category: "nature", example: "The sea is calm today." },
+  { id: 198, sinhala: "කොළය", english: "Leaf", transliteration: "Koḷaya", category: "nature", example: "A green leaf fell down." },
+  { id: 199, sinhala: "සමනලයා", english: "Butterfly", transliteration: "Samanalayā", category: "nature", example: "A beautiful butterfly." },
+  { id: 200, sinhala: "අහස", english: "Sky", transliteration: "Ahasa", category: "nature", example: "The sky is blue." }
+];
+
+/* BhashaLearn — vanilla JS app logic */
+(function () {
+  "use strict";
+
+  const NAV = [
+    { path: "/", label: "Home", icon: "home" },
+    { path: "/flashcards", label: "Flashcards", icon: "layers" },
+    { path: "/quiz", label: "Quiz", icon: "school" },
+    { path: "/categories", label: "Categories", icon: "book" },
+    { path: "/favorites", label: "Favorites", icon: "heart" },
+    { path: "/progress", label: "Progress", icon: "trophy" },
+  ];
+
+  const ICONS = {
+    home: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    layers: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+    school: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg>',
+    book: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+    heart: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+    trophy: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>',
+    message: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',
+    science: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v4l-6 10a2 2 0 0 0 2 3h14a2 2 0 0 0 2-3L15 6V2"/><line x1="9" y1="2" x2="15" y2="2"/><line x1="12" y1="12" x2="12" y2="12.01"/><path d="M6 14h12"/></svg>',
+    cpu: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>',
+    briefcase: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+    map: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21 3 6"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>',
+    coffee: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
+    activity: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+    leaf: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><line x1="2" y1="22" x2="11" y2="13"/></svg>',
+    search: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+    sun: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>',
+    moon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+    menu: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+    chevL: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>',
+    chevR: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>',
+    vol: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>',
+    check: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+    shuffle: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/></svg>',
+    arrow: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+    spark: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/></svg>',
+    heartFill: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  };
+
+  const state = {
+    path: "/",
+    params: {},
+    flash: { index: 0, flipped: false, filter: "all", random: false },
+    quiz: { phase: "setup", category: "all", questions: [], current: 0, score: 0, selected: null, answered: false },
+  };
+
+  const $ = (sel) => document.querySelector(sel);
+  const app = $("#app");
+
+  function load(key, fallback) {
+    try {
+      const v = localStorage.getItem(key);
+      return v ? JSON.parse(v) : fallback;
+    } catch { return fallback; }
+  }
+  function save(key, val) {
+    localStorage.setItem(key, JSON.stringify(val));
+  }
+
+  function getFavorites() { return load("favorites", []); }
+  function setFavorites(fn) { const n = fn(getFavorites()); save("favorites", n); return n; }
+  function getLearned() { return load("learnedWords", []); }
+  function setLearned(fn) { const n = fn(getLearned()); save("learnedWords", n); return n; }
+  function getQuizHistory() { return load("quizHistory", []); }
+
+  function updateStreak() {
+    const today = new Date().toDateString();
+    const last = localStorage.getItem("lastVisitDate");
+    let streak = parseInt(localStorage.getItem("streak") || "0", 10);
+    if (last !== today) {
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      streak = last === yesterday ? streak + 1 : 1;
+      localStorage.setItem("lastVisitDate", today);
+      localStorage.setItem("streak", String(streak));
+    }
+    return streak;
+  }
+
+  function catName(id) {
+    return CATEGORIES.find((c) => c.id === id)?.name || id;
+  }
+
+  function speak(text, lang) {
+    if (!("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+  }
+
+  function dailyWord() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const day = Math.floor((now - start) / 86400000);
+    return VOCABULARY[day % VOCABULARY.length];
+  }
+
+  function parseRoute() {
+    const hash = location.hash.slice(1) || "/";
+    const [path, qs] = hash.split("?");
+    state.path = path || "/";
+    state.params = {};
+    if (qs) new URLSearchParams(qs).forEach((v, k) => (state.params[k] = v));
+  }
+
+  function link(path) {
+    return `#${path}`;
+  }
+
+  function renderNav() {
+    const mk = (mobile) =>
+      NAV.map((n) => {
+        const active = state.path === n.path ? "active" : "";
+        return `<a href="${link(n.path)}" class="${active}">${ICONS[n.icon] || ""}${n.label}</a>`;
+      }).join("");
+    $("#nav-desktop").innerHTML = mk();
+    $("#mobile-menu").innerHTML = mk(true);
+  }
+
+  function renderHome() {
+    const w = dailyWord();
+    const favs = getFavorites();
+    const isFav = favs.includes(w.id);
+    return `
+      <section class="hero container fade-up" style="display:flex; align-items:center; gap:3rem; flex-wrap:wrap; text-align:left;">
+        <div class="hero-blob" style="width:18rem;height:18rem;background:#818cf8;top:2rem;left:5%;"></div>
+        <div class="hero-blob" style="width:22rem;height:22rem;background:#a78bfa;bottom:0;right:5%;animation-delay:1s;"></div>
+        <div class="hero-blob" style="width:15rem;height:15rem;background:#34d399;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:2s;opacity:0.2;"></div>
+        
+        <div style="flex:1; min-width:300px; z-index:10;">
+          <span class="badge">${ICONS.spark} Interactive Learning</span>
+          <h1 style="margin-top:1.25rem;">Master <span class="text-gradient">Sinhala</span> & <br/><span class="text-gradient">English</span> Vocabulary</h1>
+          <p style="margin: 1.5rem 0; font-size:1.1rem; color:var(--muted); max-width:35rem;">Learn with flashcards, quizzes, and progress tracking — built for Sri Lankan learners.</p>
+          <div class="hero-cta" style="justify-content:flex-start;">
+            <a href="${link("/flashcards")}" class="btn-primary">${ICONS.book} Start Learning ${ICONS.arrow}</a>
+            <a href="${link("/quiz")}" class="btn-ghost glass">${ICONS.school} Take a Quiz</a>
+          </div>
+          <div class="stats" style="margin: 2.5rem 0 0 0;">
+            <div class="glass"><strong>${VOCABULARY.length}</strong><span style="font-size:.75rem;color:var(--muted);">Words</span></div>
+            <div class="glass"><strong>${CATEGORIES.length}</strong><span style="font-size:.75rem;color:var(--muted);">Categories</span></div>
+            <div class="glass"><strong>3</strong><span style="font-size:.75rem;color:var(--muted);">Modes</span></div>
+          </div>
+        </div>
+        <div style="flex:1; min-width:300px; z-index:10; display:flex; justify-content:center; position:relative;">
+          <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop" alt="Learning" style="width:100%; max-width:450px; border-radius:1.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); transform: perspective(1000px) rotateY(-5deg) rotateX(5deg); border: 4px solid var(--glass);">
+        </div>
+      </section>
+      <section class="container" style="padding:3rem 1rem;">
+        <div class="section-title"><h2>Word of the Day</h2></div>
+        <div class="glass fade-up" style="max-width:48rem;margin:0 auto;padding:0;display:flex;overflow:hidden;flex-wrap:wrap;border-radius:1.5rem;text-align:left;">
+          <div style="flex:1; min-width:280px; padding:2rem 2.5rem; display:flex; flex-direction:column; justify-content:center;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
+              <span class="badge">${catName(w.category)}</span>
+              <button class="icon-btn" data-fav-daily="${w.id}" aria-label="Favorite">${isFav ? ICONS.heartFill : ICONS.heart}</button>
+            </div>
+            <h3 class="sinhala" style="font-size:2.5rem;font-weight:700;">${w.sinhala}</h3>
+            <p style="color:var(--muted);font-style:italic;margin:.5rem 0 1.25rem;">${w.transliteration}</p>
+            <div class="glass" style="padding:1.25rem;margin-bottom:1.5rem;">
+              <p style="font-size:1.5rem;font-weight:600;color:var(--indigo);">${w.english}</p>
+              <p style="font-size:.95rem;color:var(--muted);margin-top:.5rem;line-height:1.5;">"${w.example}"</p>
+            </div>
+            <div style="display:flex;gap:.5rem;">
+              <button class="btn-ghost glass" data-speak="${w.sinhala}" data-lang="si-LK">${ICONS.vol} සිංහල</button>
+              <button class="btn-ghost glass" data-speak="${w.english}" data-lang="en-US">${ICONS.vol} English</button>
+            </div>
+          </div>
+          <div style="flex:1; min-width:250px; background:url('https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=800&auto=format&fit=crop') center/cover; min-height: 250px;"></div>
+        </div>
+      </section>
+      <section class="container" style="padding:2rem 1rem 3rem;">
+        <div class="section-title"><h2>Learning Categories</h2><p>Pick a topic to start studying.</p></div>
+        <div class="grid-3">${renderCategoryCards()}</div>
+      </section>`;
+  }
+
+  function renderCategoryCards() {
+    return CATEGORIES.map(
+      (c) => `
+      <a href="${link("/flashcards")}?category=${c.id}" class="cat-card">
+        <img src="${c.image}" alt="${c.name}" loading="lazy" />
+        <div>
+          <div class="cat-icon" style="color:${c.color};">${ICONS[c.icon] || ICONS.book}</div>
+          <h3 style="font-weight:700;font-size:1.25rem;margin-bottom:.25rem;text-shadow:0 2px 4px rgba(0,0,0,0.5);">${c.name}</h3>
+          <p style="font-size:.875rem;color:rgba(255,255,255,0.8);">Click to start learning</p>
+        </div>
+      </a>`
+    ).join("");
+  }
+
+  function renderCategoriesPage() {
+    return `
+      <div class="page-header fade-up">
+        <span class="badge">${ICONS.book} Browse Collections</span>
+        <h1>Vocabulary Categories</h1>
+        <p>Curated word lists for real-world situations.</p>
+      </div>
+      <div class="container grid-3" style="padding-bottom:3rem;">${renderCategoryCards()}</div>`;
+  }
+
+  function getFilteredWords(filter) {
+    return filter === "all" ? VOCABULARY : VOCABULARY.filter((w) => w.category === filter);
+  }
+
+  function renderFlashcards() {
+    const filter = state.flash.filter;
+    const list = getFilteredWords(filter);
+    const idx = Math.min(state.flash.index, Math.max(0, list.length - 1));
+    const w = list[idx] || list[0];
+    if (!w) return "<p>No words in this category.</p>";
+    const favs = getFavorites();
+    const learned = getLearned();
+    const pctDeck = ((idx + 1) / list.length) * 100;
+    const pctTotal = Math.round((learned.length / VOCABULARY.length) * 100);
+    const flipped = state.flash.flipped ? "flipped" : "";
+
+    return `
+      <div class="page-header fade-up">
+        <span class="badge">${ICONS.layers} Interactive Flashcards</span>
+        <h1>Sinhala ↔ English Cards</h1>
+        <p>Click or press Space to flip · Arrow keys to navigate</p>
+      </div>
+      <div class="flash-wrap fade-up">
+        <div style="display:flex;justify-content:space-between;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap;">
+          <select class="glass" id="flash-filter">
+            <option value="all"${filter === "all" ? " selected" : ""}>All Categories</option>
+            ${CATEGORIES.map((c) => `<option value="${c.id}"${filter === c.id ? " selected" : ""}>${c.name}</option>`).join("")}
+          </select>
+          <button class="icon-btn glass" id="flash-random" title="Random" style="${state.flash.random ? "background:rgba(79,70,229,.15);color:var(--indigo);" : ""}">${ICONS.shuffle}</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.875rem;color:var(--muted);margin-bottom:.5rem;">
+          <span>${idx + 1} / ${list.length}</span><span>${pctTotal}% total learned</span>
+        </div>
+        <div class="progress" style="margin-bottom:1.5rem;"><span style="width:${pctDeck}%"></span></div>
+        <div class="flash-scene">
+          <div class="flash-card ${flipped}" id="flash-card">
+            <div class="flash-face">
+              <span class="badge">${catName(w.category)}</span>
+              <h2 class="sinhala">${w.sinhala}</h2>
+              <p style="color:var(--muted);font-style:italic;">${w.transliteration}</p>
+              <p style="font-size:.8rem;color:var(--muted);margin-top:1rem;">Click or Space to flip</p>
+            </div>
+            <div class="flash-face back">
+              <p class="en">${w.english}</p>
+              <p style="margin:1rem 0;color:var(--muted);max-width:20rem;">"${w.example}"</p>
+              <div style="display:flex;gap:.5rem;">
+                <button class="icon-btn glass" data-speak="${w.sinhala}" data-lang="si-LK">${ICONS.vol}</button>
+                <button class="icon-btn glass" data-speak="${w.english}" data-lang="en-US">${ICONS.vol}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flash-controls">
+          <button class="icon-btn glass" id="flash-prev">${ICONS.chevL}</button>
+          <button class="icon-btn glass" data-fav-flash="${w.id}">${favs.includes(w.id) ? ICONS.heartFill : ICONS.heart}</button>
+          <button class="icon-btn glass" data-learned="${w.id}" style="${learned.includes(w.id) ? "color:#10b981;" : ""}">${ICONS.check}</button>
+          <button class="btn-primary flip-btn" id="flash-flip">${flipped ? "Show Front" : "Flip Card"}</button>
+          <button class="icon-btn glass" id="flash-next">${ICONS.chevR}</button>
+        </div>
+        ${learned.includes(w.id) ? '<p style="text-align:center;margin-top:1rem;font-size:.875rem;color:#10b981;">✓ Marked as learned</p>' : ""}
+      </div>`;
+  }
+
+  function renderQuiz() {
+    const q = state.quiz;
+    if (q.phase === "setup") {
+      return `
+        <div class="flash-wrap fade-up">
+          <div class="glass" style="padding:2rem;text-align:center;max-width:28rem;margin:0 auto;">
+            <div style="width:4rem;height:4rem;margin:0 auto 1rem;border-radius:1rem;background:linear-gradient(135deg,var(--indigo),var(--violet));display:grid;place-items:center;color:#fff;">${ICONS.trophy.replace('width="16"','width="32"')}</div>
+            <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:.5rem;">Ready to Quiz?</h2>
+            <p style="color:var(--muted);margin-bottom:1.5rem;">10 multiple-choice questions</p>
+            <label style="display:block;text-align:left;font-size:.875rem;font-weight:500;margin-bottom:.5rem;">Category</label>
+            <select class="glass" id="quiz-cat" style="margin-bottom:1.25rem;">
+              <option value="all">All Categories (Mixed)</option>
+              ${CATEGORIES.map((c) => `<option value="${c.id}">${c.name}</option>`).join("")}
+            </select>
+            <button class="btn-primary" id="quiz-start" style="width:100%;justify-content:center;">Start Quiz</button>
+          </div>
+        </div>`;
+    }
+    if (q.phase === "finished") {
+      const last = q.questions[q.current];
+      const bonus = q.selected === last?.correct ? 1 : 0;
+      const final = q.score + bonus;
+      const pct = Math.round((final / q.questions.length) * 100);
+      const barColor = pct >= 70 ? "#10b981" : pct >= 40 ? "#f59e0b" : "#f43f5e";
+      return `
+        <div class="flash-wrap fade-up">
+          <div class="glass" style="padding:2rem;text-align:center;max-width:28rem;margin:0 auto;">
+            <h2 style="font-size:1.75rem;font-weight:700;">Quiz Complete!</h2>
+            <p style="color:var(--muted);margin:1rem 0;">Score: ${final} / ${q.questions.length}</p>
+            <div class="progress" style="height:1rem;margin-bottom:.5rem;"><span style="width:${pct}%;background:${barColor};"></span></div>
+            <p style="font-weight:600;margin-bottom:1.5rem;">${pct}% accuracy</p>
+            <button class="btn-primary" id="quiz-retry" style="width:100%;justify-content:center;margin-bottom:.5rem;">Try Again</button>
+            <button class="btn-ghost glass" id="quiz-setup" style="width:100%;">Change Category</button>
+          </div>
+        </div>`;
+    }
+
+    const item = q.questions[q.current];
+    const prog = (q.current / q.questions.length) * 100;
+    return `
+      <div class="flash-wrap fade-up">
+        <div style="margin-bottom:1rem;">
+          <div style="display:flex;justify-content:space-between;font-size:.875rem;color:var(--muted);margin-bottom:.35rem;">
+            <span>Question ${q.current + 1} of ${q.questions.length}</span>
+            <span>${ICONS.trophy} Score: ${q.score}</span>
+          </div>
+          <div class="progress"><span style="width:${prog}%"></span></div>
+        </div>
+        <div class="glass" style="padding:2rem;">
+          <div style="text-align:center;margin-bottom:1.5rem;">
+            <span class="badge">${catName(item.category)}</span>
+            <h3 class="sinhala" style="font-size:2.25rem;font-weight:700;margin:.75rem 0;">${item.sinhala}</h3>
+            <button class="btn-ghost" data-speak="${item.sinhala}" data-lang="si-LK" style="font-size:.875rem;color:var(--muted);">${ICONS.vol} Listen</button>
+          </div>
+          <div class="grid-2" id="quiz-options">
+            ${item.options.map((opt) => {
+              let cls = "quiz-opt glass";
+              if (q.answered) {
+                if (opt === item.correct) cls += " correct";
+                else if (opt === q.selected) cls += " wrong";
+                else cls += " dim";
+              }
+              return `<button class="${cls}" data-opt="${opt.replace(/"/g, "&quot;")}" ${q.answered ? "disabled" : ""}>${opt}</button>`;
+            }).join("")}
+          </div>
+        </div>
+        ${q.answered ? `<div style="text-align:right;margin-top:1rem;"><button class="btn-primary" id="quiz-next">${q.current === q.questions.length - 1 ? "Finish Quiz" : "Next"} ${ICONS.arrow}</button></div>` : ""}
+      </div>`;
+  }
+
+  function renderProgress() {
+    const learned = getLearned();
+    const favs = getFavorites();
+    const history = getQuizHistory();
+    const streak = updateStreak();
+    const mastery = Math.round((learned.length / VOCABULARY.length) * 100);
+    const recent = history.slice(0, 5);
+
+    return `
+      <div class="page-header fade-up">
+        <span class="badge" style="background:rgba(16,185,129,.1);color:#059669;">${ICONS.trophy} Your Journey</span>
+        <h1>Learning Progress</h1>
+        <p>Streaks, quiz scores, and mastered words.</p>
+      </div>
+      <div class="container" style="padding-bottom:3rem;">
+        <div class="grid-3" style="margin-bottom:1.5rem;">
+          ${[
+            ["Words Learned", learned.length, ICONS.book],
+            ["Mastery", mastery + "%", ICONS.check],
+            ["Quizzes", history.length, ICONS.trophy],
+            ["Streak", streak + " days", ICONS.heart],
+          ].map(([l, v, ic]) => `
+            <div class="glass fade-up" style="padding:1.25rem;text-align:center;">
+              <div style="margin-bottom:.5rem;color:var(--indigo);">${ic}</div>
+              <strong style="font-size:1.5rem;display:block;">${v}</strong>
+              <span style="font-size:.75rem;color:var(--muted);">${l}</span>
+            </div>`).join("")}
+        </div>
+        <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.75rem;">
+            <strong>Overall Mastery</strong><span style="color:var(--indigo);font-weight:600;">${mastery}%</span>
+          </div>
+          <div class="progress" style="height:1rem;"><span style="width:${mastery}%"></span></div>
+          <p style="font-size:.875rem;color:var(--muted);margin-top:.5rem;">${learned.length} of ${VOCABULARY.length} words learned</p>
+        </div>
+        <div class="grid-2">
+          <div class="glass" style="padding:1.25rem;">
+            <strong>Recent Quizzes</strong>
+            ${recent.length ? recent.map((h) => {
+              const p = Math.round((h.score / h.total) * 100);
+              return `<div style="display:flex;justify-content:space-between;padding:.75rem;margin-top:.5rem;background:rgba(148,163,184,.08);border-radius:.5rem;">
+                <span style="font-size:.875rem;">${new Date(h.date).toLocaleDateString()} · ${h.category === "all" ? "Mixed" : h.category}</span>
+                <strong style="color:${p >= 70 ? "#10b981" : p >= 40 ? "#f59e0b" : "#f43f5e"}">${h.score}/${h.total}</strong>
+              </div>`;
+            }).join("") : '<p style="color:var(--muted);font-size:.875rem;margin-top:1rem;">No quizzes yet.</p>'}
+          </div>
+          <div class="glass" style="padding:1.25rem;">
+            <strong>Favorites</strong>
+            ${favs.length ? favs.slice(0, 8).map((id) => {
+              const w = VOCABULARY.find((x) => x.id === id);
+              return w ? `<div style="padding:.5rem 0;border-bottom:1px solid var(--border);"><span class="sinhala">${w.sinhala}</span> — ${w.english}</div>` : "";
+            }).join("") : '<p style="color:var(--muted);font-size:.875rem;margin-top:1rem;">No favorites yet.</p>'}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderFavorites() {
+    const favs = getFavorites();
+    const words = VOCABULARY.filter((w) => favs.includes(w.id));
+    return `
+      <div class="container" style="padding:2rem 1rem 3rem;">
+        <h1 style="font-size:2rem;font-weight:700;margin-bottom:1.5rem;">Your Favorites</h1>
+        ${words.length ? `<div class="grid-2">${words.map((w) => `
+          <div class="glass" style="padding:1.25rem;">
+            <div style="display:flex;justify-content:space-between;">
+              <span class="badge">${w.category}</span>
+              <button data-remove-fav="${w.id}" class="icon-btn" style="color:#f43f5e;">${ICONS.heartFill}</button>
+            </div>
+            <h3 class="sinhala" style="font-size:1.75rem;font-weight:700;">${w.sinhala}</h3>
+            <p style="color:var(--indigo);font-weight:600;">${w.english}</p>
+            <p style="font-size:.875rem;color:var(--muted);margin:.75rem 0;font-style:italic;">"${w.example}"</p>
+            <button data-speak="${w.sinhala}" data-lang="si-LK" class="icon-btn">${ICONS.vol}</button>
+          </div>`).join("")}</div>` : `
+          <div class="glass" style="padding:3rem;text-align:center;">
+            <p style="font-size:3rem;margin-bottom:1rem;">♡</p>
+            <p style="color:var(--muted);margin-bottom:1rem;">Heart words while studying to save them here.</p>
+            <a href="${link("/flashcards")}" class="btn-primary">Start Studying</a>
+          </div>`}
+      </div>`;
+  }
+
+  function render() {
+    renderNav();
+    if (state.path === "/flashcards") {
+      if (state.params.category) state.flash.filter = state.params.category;
+      if (state.params.word) {
+        const list = getFilteredWords(state.flash.filter);
+        const i = list.findIndex((w) => w.id === parseInt(state.params.word, 10));
+        if (i >= 0) state.flash.index = i;
+      }
+      app.innerHTML = renderFlashcards();
+    } else if (state.path === "/quiz") app.innerHTML = renderQuiz();
+    else if (state.path === "/categories") app.innerHTML = renderCategoriesPage();
+    else if (state.path === "/favorites") app.innerHTML = renderFavorites();
+    else if (state.path === "/progress") app.innerHTML = renderProgress();
+    else app.innerHTML = renderHome();
+
+    bindPageEvents();
+    document.querySelectorAll(".nav-links a, #mobile-menu a").forEach((a) => {
+      a.classList.toggle("active", a.getAttribute("href") === link(state.path));
+    });
+  }
+
+  function startQuiz() {
+    const cat = $("#quiz-cat")?.value || state.quiz.category;
+    const pool = cat === "all" ? VOCABULARY : VOCABULARY.filter((w) => w.category === cat);
+    const picked = [...pool].sort(() => Math.random() - 0.5).slice(0, Math.min(10, pool.length));
+    state.quiz = {
+      phase: "active",
+      category: cat,
+      questions: picked.map((word) => {
+        const others = pool.filter((w) => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3).map((w) => w.english);
+        const options = [word.english, ...others].sort(() => Math.random() - 0.5);
+        return { ...word, options, correct: word.english };
+      }),
+      current: 0,
+      score: 0,
+      selected: null,
+      answered: false,
+    };
+    render();
+  }
+
+  function finishQuiz() {
+    const q = state.quiz;
+    const item = q.questions[q.current];
+    const final = q.score + (q.selected === item.correct ? 1 : 0);
+    const hist = getQuizHistory();
+    hist.unshift({ date: new Date().toISOString(), score: final, total: q.questions.length, category: q.category });
+    save("quizHistory", hist.slice(0, 50));
+    q.phase = "finished";
+    render();
+  }
+
+  function bindPageEvents() {
+    document.querySelectorAll("[data-speak]").forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        speak(btn.dataset.speak, btn.dataset.lang);
+      };
+    });
+
+    $("#flash-filter")?.addEventListener("change", (e) => {
+      state.flash.filter = e.target.value;
+      state.flash.index = 0;
+      state.flash.flipped = false;
+      render();
+    });
+    $("#flash-random")?.addEventListener("click", () => {
+      state.flash.random = !state.flash.random;
+      render();
+    });
+    const flip = () => { state.flash.flipped = !state.flash.flipped; render(); };
+    $("#flash-card")?.addEventListener("click", flip);
+    $("#flash-flip")?.addEventListener("click", (e) => { e.stopPropagation(); flip(); });
+    $("#flash-prev")?.addEventListener("click", () => navFlash(-1));
+    $("#flash-next")?.addEventListener("click", () => navFlash(1));
+
+    document.querySelector("[data-fav-daily]")?.addEventListener("click", function () {
+      const id = +this.dataset.favDaily;
+      setFavorites((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
+      render();
+    });
+    document.querySelector("[data-fav-flash]")?.addEventListener("click", function () {
+      const id = +this.dataset.favFlash;
+      setFavorites((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
+      render();
+    });
+    document.querySelector("[data-learned]")?.addEventListener("click", function () {
+      const id = +this.dataset.learned;
+      setLearned((l) => (l.includes(id) ? l.filter((x) => x !== id) : [...l, id]));
+      render();
+    });
+
+    $("#quiz-start")?.addEventListener("click", startQuiz);
+    $("#quiz-retry")?.addEventListener("click", startQuiz);
+    $("#quiz-setup")?.addEventListener("click", () => { state.quiz.phase = "setup"; render(); });
+
+    document.querySelectorAll("[data-opt]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (state.quiz.answered) return;
+        state.quiz.selected = btn.dataset.opt;
+        state.quiz.answered = true;
+        if (btn.dataset.opt === state.quiz.questions[state.quiz.current].correct) state.quiz.score++;
+        render();
+      });
+    });
+    $("#quiz-next")?.addEventListener("click", () => {
+      if (state.quiz.current < state.quiz.questions.length - 1) {
+        state.quiz.current++;
+        state.quiz.selected = null;
+        state.quiz.answered = false;
+        render();
+      } else finishQuiz();
+    });
+
+    document.querySelectorAll("[data-remove-fav]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = +btn.dataset.removeFav;
+        setFavorites((f) => f.filter((x) => x !== id));
+        render();
+      });
+    });
+  }
+
+  function navFlash(dir) {
+    const list = getFilteredWords(state.flash.filter);
+    state.flash.flipped = false;
+    if (state.flash.random) {
+      state.flash.index = Math.floor(Math.random() * list.length);
+    } else {
+      state.flash.index = (state.flash.index + dir + list.length) % list.length;
+    }
+    render();
+  }
+
+  function initTheme() {
+    const stored = localStorage.getItem("theme");
+    const dark = stored ? stored === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.classList.toggle("dark", dark);
+    $("#btn-theme").innerHTML = dark ? ICONS.sun : ICONS.moon;
+  }
+
+  function toggleTheme() {
+    const dark = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
+    $("#btn-theme").innerHTML = dark ? ICONS.sun : ICONS.moon;
+  }
+
+  function openSearch() {
+    $("#search-modal").classList.remove("hidden");
+    $("#search-input").value = "";
+    $("#search-results").innerHTML = "";
+    $("#search-input").focus();
+  }
+  function closeSearch() {
+    $("#search-modal").classList.add("hidden");
+  }
+  function onSearchInput(q) {
+    const el = $("#search-results");
+    if (!q.trim()) { el.innerHTML = ""; return; }
+    const ql = q.toLowerCase();
+    const hits = VOCABULARY.filter(
+      (w) => w.sinhala.includes(q) || w.english.toLowerCase().includes(ql) || w.transliteration.toLowerCase().includes(ql)
+    ).slice(0, 8);
+    if (!hits.length) {
+      el.innerHTML = `<p style="padding:2rem;text-align:center;color:var(--muted);">No matches for "${q}"</p>`;
+      return;
+    }
+    el.innerHTML = hits.map((w) => `
+      <button class="search-row" data-goto="${w.id}">
+        <span><strong class="sinhala">${w.sinhala}</strong><br><small style="color:var(--muted);">${w.english} · ${w.transliteration}</small></span>
+        ${ICONS.arrow}
+      </button>`).join("");
+    el.querySelectorAll("[data-goto]").forEach((b) => {
+      b.onclick = () => {
+        location.hash = `/flashcards?word=${b.dataset.goto}`;
+        closeSearch();
+      };
+    });
+  }
+
+  window.addEventListener("hashchange", () => { parseRoute(); render(); });
+  window.addEventListener("keydown", (e) => {
+    if (state.path !== "/flashcards") return;
+    if (e.code === "Space") { e.preventDefault(); state.flash.flipped = !state.flash.flipped; render(); }
+    if (e.code === "ArrowRight") navFlash(1);
+    if (e.code === "ArrowLeft") navFlash(-1);
+  });
+
+  $("#btn-theme").addEventListener("click", toggleTheme);
+  $("#btn-search").innerHTML = ICONS.search;
+  $("#search-icon").innerHTML = ICONS.search;
+  $("#btn-search").addEventListener("click", openSearch);
+  $("#search-close").addEventListener("click", closeSearch);
+  $("#search-x").addEventListener("click", closeSearch);
+  $("#search-input").addEventListener("input", (e) => onSearchInput(e.target.value));
+  $("#btn-menu").innerHTML = ICONS.menu;
+  $("#btn-menu").addEventListener("click", () => $("#mobile-menu").classList.toggle("hidden"));
+  $("#year").textContent = new Date().getFullYear();
+
+  initTheme();
+  parseRoute();
+  updateStreak();
+  render();
+
+  setTimeout(() => {
+    $("#loader").classList.add("out");
+    setTimeout(() => $("#loader").remove(), 500);
+  }, 700);
+})();
+
+</script>
+</body>
+</html>
+
